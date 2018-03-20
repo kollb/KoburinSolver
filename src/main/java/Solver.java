@@ -66,44 +66,6 @@ public class Solver {
     }
 
 
-    public void blackenAdjacentFields(Cell[][] board) {
-        for (int x = 0; x < 10; x++) {
-            for (int y = 0; y < 10; y++) {
-                if (board[x][y].getValue() == '1') {
-                    //blacken one field in surrounding
-                    ArrayList<Cell> surroundingCells = board[x][y].getValidSurroundingCoords(board, true);
-                    board[x][y].removeUnfitCoordsForBlackening(surroundingCells, board);
-                    Cell cell = surroundingCells.get(this.random.nextInt(surroundingCells.size()));
-                    board[cell.x][cell.y].setValue('x');
-                } else if (board[x][y].getValue() == '2') {
-                    //blacken two fields in surrounding
-                    ArrayList<Cell> surroundingCells = board[x][y].getValidSurroundingCoords(board, true);
-                    board[x][y].removeUnfitCoordsForBlackening(surroundingCells, board);
-                    Cell cell1 = surroundingCells.get(this.random.nextInt(surroundingCells.size()));
-                    Cell cell2 = surroundingCells.get(this.random.nextInt(surroundingCells.size()));
-                    while (cell1 == cell2)
-                        cell2 = surroundingCells.get(this.random.nextInt(surroundingCells.size()));
-                    board[cell1.x][cell1.y].setValue('x');
-                    board[cell2.x][cell2.y].setValue('x');
-                }
-            }
-        }
-        this.blackenRandomFields(board);
-    }
-
-
-    public void blackenRandomFields(Cell[][] board) {
-        int nmbrAdditionalBlackFields = this.random.nextInt(5);
-        for (int x = 0; x < 10; x++) {
-            for (int y = 0; y < 10; y++) {
-                if (board[x][y].getValue() == '_') {
-                    if (this.random.nextInt(100) < nmbrAdditionalBlackFields) {
-                        board[x][y].setValue('x');
-                    }
-                }
-            }
-        }
-    }
 
 
 }

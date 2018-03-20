@@ -14,9 +14,11 @@ public class Application {
 
         board.initialiseSmallBoard();
         board.blackenSmallBoard();
+        /*board.initialiseBoard();
+        board.blackenAdjacentFields();*/
         board.printBoard();
 
-        solver.drawLine(0,0,board.getBoard());
+        solver.drawLine(2,2,board.getBoard());
 
         board.printBoard();
         board.printBoardWithFollowers();

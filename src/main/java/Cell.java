@@ -60,11 +60,7 @@ public class Cell {
                 collectWrongCells.add(c);
             }
             //Remove Cells, that have already been used
-            else if (((c.x + 1) < board[0].length && board[c.x + 1][c.y].next != null) ||
-                    ((c.y + 1) < board.length && board[c.x][c.y + 1].next != null) ||
-                    ((c.x - 1) >= board[0].length && board[c.x - 1][c.y].next != null) ||
-                    ((c.y - 1) >= board.length && board[c.x][c.y - 1].next != null)) {
-                System.out.println(c.x + " " +c.y);
+            else if (board[c.x][c.y].next != null) {
                 collectWrongCells.add(c);
             }
         }
