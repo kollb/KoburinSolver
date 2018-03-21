@@ -2,9 +2,17 @@ import java.util.ArrayList;
 
 public class Solver {
     private MersenneTwister random = new MersenneTwister();
+    private int counter;
 
-    public boolean trackComplete(Cell[][] board) {
-        for (Cell[] row : board) {
+    private final Board board;
+
+    public Solver(Board board) {
+        this.board = board;
+    }
+
+    public boolean trackComplete(Board board) {
+        Cell[][] cells = board.getBoard();
+        for (Cell[] row : cells) {
             for (Cell field : row) {
                 if (field.getValue() == '_') return false;
             }
@@ -13,23 +21,23 @@ public class Solver {
         int x = 0;
         int y = 0;
         //detect Loop in Track
-        while (board[x][y].isNumber()) {
+        while (cells[x][y].isNumber()) {
             x += 1;
         }
-        Cell firstCell = board[x][y];
+        Cell firstCell = cells[x][y];
         Cell nextCell = firstCell.getNext();
 
-        for (int i = 0; i < board.length * board[0].length; i++) {
+        for (int i = 0; i < cells.length * cells[0].length; i++) {
             ArrayList<Cell> surroundingCells = new ArrayList<Cell>();
-            if (nextCell.getNext() == null)
-            {   if (nextCell.x < board[0].length - 1) surroundingCells.add(board[x + 1][y]);
-                if (nextCell.y < board.length - 1) surroundingCells.add(board[x][y + 1]);
-                if (nextCell.x > 0) surroundingCells.add(board[x - 1][y]);
-                if (nextCell.y > 0) surroundingCells.add(board[x][y - 1]);
-                for (Cell c : surroundingCells){
+            if (nextCell.getNext() == null) {
+                if (nextCell.x < cells[0].length - 1) surroundingCells.add(cells[x + 1][y]);
+                if (nextCell.y < cells.length - 1) surroundingCells.add(cells[x][y + 1]);
+                if (nextCell.x > 0) surroundingCells.add(cells[x - 1][y]);
+                if (nextCell.y > 0) surroundingCells.add(cells[x][y - 1]);
+                for (Cell c : surroundingCells) {
                     if (c.getNext() != null)
                         System.out.println("Fertig");
-                        return true;
+                    return true;
                 }
 
             }
@@ -41,12 +49,66 @@ public class Solver {
         return true;
     }
 
+    public boolean finalValidation(Board board) {
+       // System.out.println("jan");
+        for (Cell[] row : board.getBoard()) {
+            for (Cell field : row) {
+
+                if (!field.isUsed()){
+                    //System.out.println("hier kommt flasch raus");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean solve(int x, int y, Board board) {
+        return solve(board.getCell(x, y), board);
+    }
+
+
+    public boolean solve(Cell currentCell, Board board) {
+        //Cell currentCell = board.getCell(x, y);
+
+        if (currentCell.isStart()) {
+            System.out.println(currentCell);
+            return finalValidation(board);
+            //return trackComplete(board);
+        }
+
+        if (counter == 0) {
+            currentCell.setStart(true);
+        }
+
+        currentCell.enter();
+        ArrayList<Cell> possibleCells = currentCell.possibleValues(board);
+        System.out.println(currentCell + " ?> " + possibleCells);
+        for (Cell c : possibleCells) {
+            currentCell.link(c);
+            counter++;
+            if (solve(c, board)) {
+                return true;
+            }
+            c.unlink();
+        }
+
+        currentCell.leave();
+
+        return false;
+    }
+
 
     public boolean drawLine(int x, int y, Cell[][] board) {
-        System.out.println("Aktuelle Zelle: x: " + x + " y: " + y);
-        if (trackComplete(board)) return true;
-
         Cell cell = board[x][y];
+        if (cell.isStart()) {
+            //return finalValidation();
+            //return trackComplete(board);
+        }
+
+        //System.out.println("Aktuelle Zelle: x: " + x + " y: " + y);
+        //if (trackComplete(board)) return true;
+
         ArrayList<Cell> possibleCells = cell.getValidSurroundingCoords(board, false);
 
         System.out.println("-----Valid Coords------");
@@ -64,8 +126,6 @@ public class Solver {
         }
         return false;
     }
-
-
 
 
 }
