@@ -16,7 +16,7 @@ public class Application {
 
         System.out.println("\n\n\n");
 
-        solver.solve(0,0, board);
+        solver.solve(0,0);
 
         board.printBoard();
         board.printBoardWithFollowers();

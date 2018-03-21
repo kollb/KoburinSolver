@@ -7,29 +7,16 @@ public class Cell {
     private char value;
     private Cell next;
     private boolean start;
-    private Cell previous;
-
-    public void link(Cell cell){
-        this.next = cell;
-        cell.previous = this;
-    }
-
-    public void unlink(){
-        this.previous = null;
-        this.next = null;
-    }
 
     public boolean isBlackend() {
         return this.value == 'x';
     }
 
     public boolean isUsed() {
-        //return this.value == '_';
         return isBlackend() || isNumber() || next != null;
     }
 
-
-    public int count() {
+    public int getNumber() {
         return this.value - 48;
     }
 
@@ -53,7 +40,6 @@ public class Cell {
     }
 
     public void setNext(Cell next) {
-        System.out.println("NEXT from " + this + " = " + next);
         this.next = next;
     }
 
@@ -62,19 +48,19 @@ public class Cell {
     }
 
     public ArrayList<Cell> possibleValues(Board board) {
-        ArrayList<Cell> possibru = new ArrayList<Cell>();
+        ArrayList<Cell> possibleCells = new ArrayList<Cell>();
 
         Cell above = board.getCell(this.x, this.y-1);
         Cell below = board.getCell(this.x, this.y+1);
         Cell left = board.getCell(this.x-1, this.y);
         Cell right = board.getCell(this.x+1, this.y);
 
-        if (above != null && above.isVisitable(this)) possibru.add(above);
-        if (below != null && below.isVisitable(this)) possibru.add(below);
-        if (left  != null && left .isVisitable(this)) possibru.add(left );
-        if (right != null && right.isVisitable(this)) possibru.add(right);
+        if (above != null && above.isVisitable(this)) possibleCells.add(above);
+        if (below != null && below.isVisitable(this)) possibleCells.add(below);
+        if (left  != null && left .isVisitable(this)) possibleCells.add(left );
+        if (right != null && right.isVisitable(this)) possibleCells.add(right);
 
-        return possibru;
+        return possibleCells;
     }
 
     public void enter(){
@@ -85,6 +71,8 @@ public class Cell {
         this.next = null;
     }
 
+    //todo ins board verlagern
+    @Deprecated
     public ArrayList<Cell> getValidSurroundingCoords(Cell[][] board, boolean blackeningmode) {
         ArrayList<Cell> surroundingFields = new ArrayList<Cell>();
         if (x < board[0].length - 1) surroundingFields.add(board[x + 1][y]);
@@ -93,10 +81,6 @@ public class Cell {
         if (y > 0) surroundingFields.add(board[x][y - 1]);
         this.removeInvalidCoords(surroundingFields, board, blackeningmode);
         return surroundingFields;
-    }
-
-    public boolean hasValidSurroundingCoords(Cell[][] board) {
-        return this.getValidSurroundingCoords(board, false).size() > 0;
     }
 
 
@@ -149,7 +133,7 @@ public class Cell {
         return cells;
     }
 
-
+    //todo überarbeiten?
     public boolean isNumber() {
         return this.value == '0'
                 || this.value == '1'
