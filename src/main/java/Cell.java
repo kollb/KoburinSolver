@@ -8,6 +8,17 @@ public class Cell {
     private Cell next;
     private boolean start;
 
+    //todo neue possibleValues schreiben
+    private int adjacentBlackCells;
+    private int maxAdjacentBlackCells;
+
+    Cell(int x, int y, char value) {
+        this.x = x;
+        this.y = y;
+        this.value = value;
+        this.maxAdjacentBlackCells = this.getNumber();
+    }
+
     public boolean isBlackend() {
         return this.value == 'x';
     }
@@ -21,15 +32,14 @@ public class Cell {
     }
 
     public boolean isVisitable(Cell comingFrom) {
-        if(this.next == comingFrom) { return false; }
+        if (this.next == comingFrom) {
+            return false;
+        }
         return !isBlackend() && !isNumber() && (this.next == null || this.start);
     }
 
-    Cell(int x, int y, char value) {
-        this.x = x;
-        this.y = y;
-        this.value = value;
-    }
+
+
 
     public char getValue() {
         return value;
@@ -50,88 +60,61 @@ public class Cell {
     public ArrayList<Cell> possibleValues(Board board) {
         ArrayList<Cell> possibleCells = new ArrayList<Cell>();
 
-        Cell above = board.getCell(this.x, this.y-1);
-        Cell below = board.getCell(this.x, this.y+1);
-        Cell left = board.getCell(this.x-1, this.y);
-        Cell right = board.getCell(this.x+1, this.y);
+        Cell above = board.getCell(this.x, this.y - 1);
+        Cell below = board.getCell(this.x, this.y + 1);
+        Cell left = board.getCell(this.x - 1, this.y);
+        Cell right = board.getCell(this.x + 1, this.y);
 
         if (above != null && above.isVisitable(this)) possibleCells.add(above);
         if (below != null && below.isVisitable(this)) possibleCells.add(below);
-        if (left  != null && left .isVisitable(this)) possibleCells.add(left );
+        if (left != null && left.isVisitable(this)) possibleCells.add(left);
         if (right != null && right.isVisitable(this)) possibleCells.add(right);
 
         return possibleCells;
     }
 
-    public void enter(){
+    public void enter() {
 
     }
 
-    public void leave(){
+    public void leave() {
         this.next = null;
     }
 
+
+    public boolean isBlackenable(Cell cell, Board board) {
+
+        Cell above = board.getCell(this.x, this.y - 1);
+        Cell below = board.getCell(this.x, this.y + 1);
+        Cell left = board.getCell(this.x - 1, this.y);
+        Cell right = board.getCell(this.x + 1, this.y);
+
+        return ((above != null && !above.isBlackend()) || above == null) &&
+                ((below != null && !below.isBlackend()) || below == null) &&
+                ((right != null && !right.isBlackend()) || right == null) &&
+                ((left != null && !left.isBlackend()) || left == null);
+    }
+
+
     //todo ins board verlagern
     @Deprecated
-    public ArrayList<Cell> getValidSurroundingCoords(Cell[][] board, boolean blackeningmode) {
+    public ArrayList<Cell> possibleBlackeningCoords(Board board) {
         ArrayList<Cell> surroundingFields = new ArrayList<Cell>();
-        if (x < board[0].length - 1) surroundingFields.add(board[x + 1][y]);
-        if (y < board.length - 1) surroundingFields.add(board[x][y + 1]);
-        if (x > 0) surroundingFields.add(board[x - 1][y]);
-        if (y > 0) surroundingFields.add(board[x][y - 1]);
-        this.removeInvalidCoords(surroundingFields, board, blackeningmode);
+
+        Cell above = board.getCell(this.x, this.y - 1);
+        Cell below = board.getCell(this.x, this.y + 1);
+        Cell left = board.getCell(this.x - 1, this.y);
+        Cell right = board.getCell(this.x + 1, this.y);
+
+        if (above != null && above.isBlackenable(this, board)) surroundingFields.add(above);
+        if (below != null && below.isBlackenable(this, board)) surroundingFields.add(below);
+        if (left != null && left.isBlackenable(this, board)) surroundingFields.add(left);
+        if (right != null && right.isBlackenable(this, board)) surroundingFields.add(right);
+
+        //for (Cell c : surroundingFields) System.out.println(c);
         return surroundingFields;
     }
 
-
-    private void removeInvalidCoords(ArrayList<Cell> cells, Cell[][] board, boolean blackeningmode) {
-        ArrayList<Cell> collectWrongCells = new ArrayList<Cell>();
-        for (Cell c : cells) {
-            //Remove Coords out of Range
-            if (c.x < 0 || c.x > board[0].length ||
-                    c.y < 0 || c.y > board.length) {
-                collectWrongCells.add(c);
-            }
-            //Remove Coords that would overwrite Numbers or black Fields
-            else if (board[c.x][c.y].getValue() == '1' ||
-                    board[c.x][c.y].getValue() == '2' ||
-                    board[c.x][c.y].getValue() == '0' ||
-                    board[c.x][c.y].getValue() == 'x') {
-                collectWrongCells.add(c);
-            }
-            //Remove Cells, that have already been used
-            else if (board[c.x][c.y].next != null) {
-                collectWrongCells.add(c);
-            }
-        }
-
-        cells.removeAll(collectWrongCells);
-
-        if (blackeningmode) {
-            cells = this.removeUnfitCoordsForBlackening(cells, board);
-        }
-
-        /*//print ValidCoords:
-        System.out.println("-----Valid Coords------");
-        for (Cell c : cells)
-            System.out.println("x: " + c.x + "y:" + c.y);*/
-    }
-
-    public ArrayList<Cell> removeUnfitCoordsForBlackening(ArrayList<Cell> cells, Cell[][] board) {
-        //Remove Coords, that lie orthogonally to other black fields and therefore forbid this Cell
-        //to be blackened
-        ArrayList<Cell> collectWrongCells = new ArrayList<Cell>();
-        for (Cell c : cells) {
-            if (((c.x + 1) < board[0].length && board[c.x + 1][c.y].getValue() == 'x') ||
-                    ((c.y + 1) < board.length && board[c.x][c.y + 1].getValue() == 'x') ||
-                    ((c.x - 1) >= board[0].length && board[c.x - 1][c.y].getValue() == 'x') ||
-                    ((c.y - 1) >= board.length && board[c.x][c.y - 1].getValue() == 'x')) {
-                collectWrongCells.add(c);
-            }
-            cells.removeAll(collectWrongCells);
-        }
-        return cells;
-    }
 
     //todo überarbeiten?
     public boolean isNumber() {
@@ -149,7 +132,7 @@ public class Cell {
     }
 
     @Override
-    public String toString(){
-        return "Cell ("+ this.x + "|" + this.y + ")";
+    public String toString() {
+        return "Cell (" + this.x + "|" + this.y + ")";
     }
 }
