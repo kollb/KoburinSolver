@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox style="-fx-background-color: #ffaa0e;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
+   <children>
+      <VBox prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <Label text="4x4 Festgelegte schwarze Felder" />
+            <Button mnemonicParsing="false" onAction="#clickStart4x4" text="Start" />
+            <Label text="4x4 Zufällig Schwarz" />
+            <Button mnemonicParsing="false" onAction="#clickStart4x4Random" text="Start" />
+            <Label text="10x10 festgelegte Schwarze" />
+            <Button mnemonicParsing="false" onAction="#clickStart10x10" text="Start" />
+            <Label text="10x10 zufällige Schwarze" />
+            <Button mnemonicParsing="false" onAction="#clickStart10x10Random" text="Start" />
+         </children>
+      </VBox>
+      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" />
+      <Pane fx:id="pane" prefHeight="522.0" prefWidth="800.0" style="-fx-background-color: #fafafa;" />
+   </children>
+</VBox>

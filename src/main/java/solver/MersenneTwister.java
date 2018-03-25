@@ -1,4 +1,4 @@
-// *** version 02 ***
+package solver;// *** version 02 ***
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
