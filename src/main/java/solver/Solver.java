@@ -1,10 +1,17 @@
 package solver;
 
+import gui.Controller;
+import javafx.application.Platform;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class Solver {
+public class Solver implements Runnable {
+
     private int counter;
+    private Controller controller;
+    private String operatingMode;
+    /* 4x4, 4x4R, 10x10, 10x10R */
 
     private final Board board;
 
@@ -12,8 +19,14 @@ public class Solver {
 
     private boolean solutionFound = false;
 
-    public Solver(Board board) {
+    public Solver(Board board, String mode, Controller contr) {
         this.board = board;
+        this.controller = contr;
+        this.operatingMode = mode;
+    }
+
+    public Board getBoard() {
+        return this.board;
     }
 
     public boolean getSolutionState() {
@@ -25,7 +38,7 @@ public class Solver {
     }
 
     public void setCounter(int counter) {
-        this.counter = 0;
+        this.counter = counter;
     }
 
     public void addCheckedBoard(String board) {
@@ -60,8 +73,56 @@ public class Solver {
         return solve(board.getCell(x, y));
     }
 
+    public void run() {
+        System.out.println("Thread startet");
+        reset();
+
+        do {
+            switch (operatingMode) {
+                case "4x4":
+                    board.initialiseSmallBoard();
+                    board.blacken4x4BoardHard();
+                    board.printBoard();
+                    break;
+                case "4x4R":
+                    board.initialiseSmallBoard();
+                    board.blackenAdjacentFields();
+                    board.printBoard();
+                    break;
+                case "10x10":
+                    board.initialise10x10Board();
+                    board.blacken10x10Hard();
+                    board.printBoard();
+                    break;
+                case "10x10R":
+                    board.initialise10x10Board();
+                    board.blackenAdjacentFields();
+                    board.printBoard();
+                    break;
+                default:
+                    board.initialiseSmallBoard();
+                    board.blacken4x4BoardHard();
+                    board.printBoard();
+                    break;
+            }
+            setCounter(0);
+            solve(0, 2);
+            board.printBoard();
+        } while (!solutionFound);
+
+        System.out.println("Thread zuende");
+    }
+
 
     public boolean solve(Cell currentCell) {
+        if (counter % 20 == 0) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    controller.update(board);
+                }
+            });
+        }
         if (currentCell.isStart()) {
             return finalValidation();
         }
@@ -85,7 +146,7 @@ public class Solver {
     }
 
     public void reset() {
-        this.historicBoards =  new HashSet<>();
+        this.historicBoards = new HashSet<>();
         this.counter = 0;
     }
 

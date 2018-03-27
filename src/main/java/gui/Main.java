@@ -14,8 +14,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("../koburin.fxml"));
-        primaryStage.setTitle("Koburin solver.Solver     小ぶり");
-        primaryStage.setScene(new Scene(root, 1000, 1000));
+        primaryStage.setTitle("Koburin Solver     小ぶり");
+        primaryStage.setScene(new Scene(root, 1000, 700));
         primaryStage.setMinWidth(280);
         primaryStage.setMinHeight(320);
         primaryStage.show();
