@@ -7,6 +7,7 @@ public class Application implements Runnable {
     }
 
     public void run() {
+        System.out.Println("Jello")
       /*  Board board = new Board();
         // Solver solver = new Solver(board);
         boolean solutionFound = false;
